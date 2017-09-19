@@ -330,7 +330,7 @@ public abstract class BaseOperatorTest<I, PI extends Publisher<? extends I>, O, 
 
 	final int defaultLimit(OperatorScenario<I, PI, O, PO> scenario) {
 		if (scenario.prefetch() == -1) {
-			return Queues.SMALL_BUFFER_SIZE - (Queues.SMALL_BUFFER_SIZE >> 2);
+			return Queues.BUFFER_SIZE - (Queues.BUFFER_SIZE >> 2);
 		}
 		if (scenario.prefetch() == Integer.MAX_VALUE) {
 			return Integer.MAX_VALUE;
