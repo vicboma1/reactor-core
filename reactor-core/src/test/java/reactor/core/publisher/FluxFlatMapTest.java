@@ -1390,4 +1390,39 @@ public class FluxFlatMapTest {
         inner.cancel();
         assertThat(inner.scan(Scannable.Attr.CANCELLED)).isTrue();
     }
+
+	@Test
+	public void errorModeContinue() {
+		Flux<Integer> test = Flux
+				.just(1, 2)
+				.hide()
+				.<Integer>flatMap(f -> null)
+				.onErrorContinue();
+
+		StepVerifier.create(test)
+		            .expectNoFusionSupport()
+		            .expectComplete()
+		            .verifyThenAssertThat()
+		            .hasDropped(1, 2)
+		            .hasDroppedErrors(2);
+	}
+
+	@Test
+	public void errorModeContinueWithCallable() {
+		Flux<Integer> test = Flux
+				.just(1, 2)
+				.hide()
+				.flatMap(f -> Mono.<Integer>fromRunnable(() -> {
+					throw new ArithmeticException("boom");
+				}))
+				.onErrorContinue();
+
+		StepVerifier.create(test)
+		            .expectNoFusionSupport()
+		            .expectComplete()
+		            .verifyThenAssertThat()
+		            .hasDropped(1, 2)
+		            .hasDroppedErrors(2);
+	}
+
 }
